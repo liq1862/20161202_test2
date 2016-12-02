@@ -1,5 +1,9 @@
 package com.example.user.a20161202_test2;
 
+import android.content.pm.PackageManager;
+import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,18 +20,23 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 public class MainActivity extends AppCompatActivity {
     Button showbutton, writebutton, readbutton, readrawbutton, writeexternalbutton;
-
+    Button creatdir, creatdirSD;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        showbutton =(Button) findViewById(R.id.button);
-        writebutton =(Button) findViewById(R.id.button2);
+        showbutton = (Button) findViewById(R.id.button);
+        writebutton = (Button) findViewById(R.id.button2);
         readbutton = (Button) findViewById(R.id.button3);
-        readrawbutton =(Button) findViewById(R.id.button4);
+        readrawbutton = (Button) findViewById(R.id.button4);
         writeexternalbutton = (Button) findViewById(R.id.button5);
+        creatdir = (Button) findViewById(R.id.button6);
+        creatdirSD = (Button) findViewById(R.id.button7);
 //  =================================================================
  /*顯示路徑*/
         showbutton.setOnClickListener(new View.OnClickListener() {
@@ -72,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
                 try {
                     fr = new FileReader(file);
-                    while (fr.read(buffer)!= -1) {
+                    while (fr.read(buffer) != -1) {
                         sb.append(new String(buffer));
                     }
                 } catch (FileNotFoundException e) {
@@ -132,5 +141,55 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+//  ====================================================================
+        /*在預設位置建立資料夾*/
+        creatdir.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                File f3 = getExternalFilesDir("");
+                File f4 = new File(f3.toString() + File.separator + "test6");
+                f4.mkdir();
+            }
+        });
+//  ====================================================================
+        /*在SDCard根目錄建立資料夾*/
+        //須設定權限
+        creatdirSD.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int permission = ActivityCompat.checkSelfPermission(MainActivity.this,
+                        WRITE_EXTERNAL_STORAGE);
+                if (permission != PackageManager.PERMISSION_GRANTED) {
+                    //未取得權限，向使用者要求允許權限
+                    Log.d("PERM", "沒有權限");
+
+                    ActivityCompat.requestPermissions(MainActivity.this,
+                            new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE},
+                            123 // RequestCode
+                    );
+                } else {
+                    Log.d("PERM", "有權限");
+                    File f3 = Environment.getExternalStorageDirectory();
+                    Log.d("EXT", f3.toString());
+                    File f4 = new File(f3.toString() + File.separator + "test7");
+                    f4.mkdir();
+                }
+            }
+        });
+//  =====================================================================
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 123)
+        {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                File f3 = Environment.getExternalStorageDirectory();
+                Log.d("EXT", f3.toString());
+                File f4 = new File(f3.toString() + File.separator + "test7");
+                f4.mkdir();
+            }
+        }
     }
 }
