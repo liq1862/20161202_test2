@@ -17,7 +17,7 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 
 public class MainActivity extends AppCompatActivity {
-    Button showbutton, writebutton, readbutton, readrawbutton;
+    Button showbutton, writebutton, readbutton, readrawbutton, writeexternalbutton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         writebutton =(Button) findViewById(R.id.button2);
         readbutton = (Button) findViewById(R.id.button3);
         readrawbutton =(Button) findViewById(R.id.button4);
-
+        writeexternalbutton = (Button) findViewById(R.id.button5);
 //  =================================================================
  /*顯示路徑*/
         showbutton.setOnClickListener(new View.OnClickListener() {
@@ -83,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("READFILE", sb.toString());
             }
         });
+//  ========================================================================
+/*讀取res/raw的test1*/
         readrawbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,6 +107,29 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 Log.d("RAWREAD", sb.toString());
+            }
+        });
+//  ====================================================================
+        /*外部儲存空間*/
+//  ====================================================================
+        //因寫入的地方為android預設，故不需設定權限
+        writeexternalbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                File f3 = getExternalFilesDir("");
+                Log.d("FILE", f3.toString());
+                String wFile = f3.toString() + File.separator + "myfile2.txt";
+                Log.d("FILE", "wFile:" + wFile);
+                try {
+                    FileOutputStream fos = new FileOutputStream(wFile);
+                    OutputStreamWriter osw = new OutputStreamWriter(fos);  // 寫入資料
+                    osw.write("She sell sea shells on the sea shore .");
+                    osw.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
