@@ -11,10 +11,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 
 public class MainActivity extends AppCompatActivity {
-    Button showbutton, writebutton, readbutton;
+    Button showbutton, writebutton, readbutton, readrawbutton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
         showbutton =(Button) findViewById(R.id.button);
         writebutton =(Button) findViewById(R.id.button2);
         readbutton = (Button) findViewById(R.id.button3);
+        readrawbutton =(Button) findViewById(R.id.button4);
 
 //  =================================================================
  /*顯示路徑*/
@@ -77,6 +81,30 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 Log.d("READFILE", sb.toString());
+            }
+        });
+        readrawbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                InputStream is = null;
+                InputStreamReader reader = null;
+                StringBuilder sb = new StringBuilder();
+                is = getResources().openRawResource(R.raw.test1);
+
+                char[] buffer = new char[1];
+                try {
+                    reader = new InputStreamReader(is, "UTF-8");
+                    while (reader.read(buffer) != -1) {
+                        sb.append(new String(buffer));
+                    }
+
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Log.d("RAWREAD", sb.toString());
             }
         });
     }
